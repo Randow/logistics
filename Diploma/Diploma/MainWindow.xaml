@@ -1,0 +1,145 @@
+﻿<Window x:Class="Diploma.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MainWindow" Height="443" Width="757">
+
+    <Window.Resources>
+        <Style x:Key="ToolBarButtonStyle">
+            <Setter Property="Control.Background" Value="{x:Null}"></Setter>
+            <Setter Property="Control.Width" Value="28"></Setter>
+            <Setter Property="Control.Height" Value="28"></Setter>
+            <Setter Property="Control.Padding" Value="4"></Setter>
+            <Setter Property="Control.BorderThickness" Value="0"></Setter>
+        </Style>
+        <Style x:Key="RectangleStyle">
+            <Setter Property="Control.Background" Value="Blue"></Setter>
+        </Style>
+    </Window.Resources>
+    <Grid Background="#FF444444">
+        <DockPanel LastChildFill="True">
+            <StackPanel DockPanel.Dock="Top" Orientation="Vertical">
+                <StackPanel>
+                    <StackPanel.Background>
+                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                            <GradientStop Color="#FFAEAEAE" Offset="0"/>
+                            <GradientStop Color="#FF555555" Offset="1"/>
+                        </LinearGradientBrush>
+                    </StackPanel.Background>
+
+                    <Separator Margin="0" Background="#FF888888"></Separator>
+                    <Menu HorizontalAlignment="Left" Height="18" VerticalAlignment="Top" Foreground="White">
+                        <Menu.Background>
+                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                <GradientStop Color="#FFAEAEAE" Offset="0"/>
+                                <GradientStop Color="#FF555555" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Menu.Background>
+                        <MenuItem Name="Menu_File" Header="Файл">
+                            <MenuItem Header="Новый проект" Foreground="Black" Click="NewProjectEvt"></MenuItem>
+                            <MenuItem Header="Открыть" Foreground="Black" Click="OpenProjectEvt"></MenuItem>
+                            <MenuItem Header="Сохранить" Foreground="Black" Click="SaveProjectEvt">
+                            </MenuItem>
+                            <Separator></Separator>
+                            <MenuItem Header="Импорт инвойса" Foreground="Black" Click="InvoiceImportEvt"></MenuItem>
+                        </MenuItem>
+                        <MenuItem Header="Правка">
+                            <MenuItem Header="Отменить" Foreground="Black" Click="UndoEvt"></MenuItem>
+                            <MenuItem Header="Вернуть" Foreground="Black" IsEnabled="False" Click="RedoEvt"></MenuItem>
+                            <MenuItem Header="Выбрать все" Foreground="Black" Click="SelectAllEvt"></MenuItem>
+                            <MenuItem Header="Инверсия выделения" Foreground="Black" Click="InverseSelectEvt"></MenuItem>
+                            <MenuItem Header="Удалить" Foreground="Black" Click="RemoveEvt"></MenuItem>
+                        </MenuItem>
+                        <MenuItem Header="Справка">
+                            <MenuItem Header="Просмотр справки" Foreground="Black" Click="ShowReferenceEvt"></MenuItem>
+                            <Separator></Separator>
+                            <MenuItem Header="О программе" Foreground="Black" Click="AboutEvt"></MenuItem>
+                        </MenuItem>
+                    </Menu>
+                </StackPanel>
+
+                <Separator Margin="0" Background="#FF484848"></Separator>
+                <Separator Margin="0" Background="#FF383838"></Separator>
+                <StackPanel Orientation="Horizontal" Background="#ff404040">
+                    <Button Style="{StaticResource ToolBarButtonStyle}" ToolTip="Перемещение">
+                        <Image Source="Images/selectAndMove.png"/>
+                    </Button>
+                    <Button Style="{StaticResource ToolBarButtonStyle}" ToolTip="Поворот">
+                        <Image Source="Images/selectAndRotate.png"/>
+                    </Button>
+                    <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Height="15" Background="#FF2C84E8">
+
+                    </Separator>
+                    <Button Style="{StaticResource ToolBarButtonStyle}" ToolTip="Выбор объекта">
+                        <Image Source="Images/selectObject.png" IsEnabled="False"/>
+                    </Button>
+                </StackPanel>
+                <Separator Margin="0" Background="#FF484848"></Separator>
+                <Separator Margin="0" Background="#FF353535"></Separator>
+
+            </StackPanel>
+            <Border BorderBrush="#FF353535" BorderThickness="1" DockPanel.Dock="Right" Width="250" Margin="0,5,0,5">
+                <Border BorderBrush="#FF484848" BorderThickness="1" Background="#ff424242">
+                    <StackPanel Orientation="Vertical">
+                        <Border Margin="6,6,6,0" BorderBrush="#FF353535" BorderThickness="1" >
+                            <StackPanel Orientation="Vertical">
+                                <StackPanel Orientation="Horizontal" Height="26" Name="BoxPropertiesHeader" MouseLeftButtonDown="CheckBoxProperties">
+                                    <Image Name="BoxPropertiesImg" Source="Images/plus.png"/>
+                                    <Label Foreground="#ffeeeeee" Content="Параметры объекта"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="15,0,10,15" Name="BoxProperties" Visibility="Collapsed">
+                                    <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Background="#FF2C84E8"/>
+                                    <TextBlock Margin="10,0,0,0" Foreground="#ffc0c0c0"> 
+                                        Маркировка: <LineBreak/>
+                                        Длина: <LineBreak/>
+                                        Ширина: <LineBreak/>
+                                        Высота: <LineBreak/>
+                                        Вес: <LineBreak/>
+                                        Максимально в стопке: <LineBreak/>
+                                        Кантовка:
+                                    </TextBlock>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                        <Border Margin="6" BorderBrush="#FF353535" BorderThickness="1" Padding="0,0,0,4">
+                            <StackPanel Orientation="Vertical">
+                                <StackPanel Orientation="Horizontal" Height="26" MouseLeftButtonDown="CheckBoxList">
+                                    <Image Name="BoxListImg" Source="Images/plus.png"/>
+                                    <Label Foreground="#ffeeeeee" Content="Список объектов"/>
+                                </StackPanel>
+                                <ItemsControl  Foreground="#ffc0c0c0" Name="BoxList" Visibility="Collapsed">
+                                    <Border BorderBrush="#FF353535" BorderThickness="1" Margin="4,4,4,0">
+                                        <Border BorderBrush="#FF484848" BorderThickness="1">
+                                            <Label Height="30" VerticalContentAlignment="Center" Foreground="#ffc0c0c0">1 коробка</Label>
+                                        </Border>
+                                    </Border>
+                                    <Border BorderBrush="#FF2C84E8" BorderThickness="1" Margin="4,4,4,0">
+                                        <Border BorderBrush="#FF484848" BorderThickness="1">
+                                            <Label Height="30" VerticalContentAlignment="Center" Foreground="#ffc0c0c0" MouseLeftButtonDown="Label_MouseLeftButtonDown">2 коробка</Label>
+                                        </Border>
+                                    </Border>
+                                    <Border BorderBrush="#FF353535" BorderThickness="1" Margin="4,4,4,0">
+                                        <Border BorderBrush="#FF484848" BorderThickness="1">
+                                            <Label Height="30" VerticalContentAlignment="Center" Foreground="#ffc0c0c0">3 коробка</Label>
+                                        </Border>
+                                    </Border>
+                                    <Border BorderBrush="#FF353535" BorderThickness="1" Margin="4,4,4,0">
+                                        <Border BorderBrush="#FF484848" BorderThickness="1">
+                                            <Label Height="30" VerticalContentAlignment="Center" Foreground="#ffc0c0c0">4 коробка</Label>
+                                        </Border>
+                                    </Border>
+                                    <Border BorderBrush="#FF353535" BorderThickness="1" Margin="4,4,4,0">
+                                        <Border BorderBrush="#FF484848" BorderThickness="1">
+                                            <Label Height="30" VerticalContentAlignment="Center" Foreground="#ffc0c0c0">5 коробка</Label>
+                                        </Border>
+                                    </Border>
+                                </ItemsControl>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Border>
+            </Border>
+
+            <StackPanel MouseLeftButtonDown="FieldEvt"></StackPanel>
+        </DockPanel>
+    </Grid>
+</Window>
