@@ -17,87 +17,30 @@ using System.ComponentModel;
 using System.IO;
 using Microsoft.Win32;
 using System.Windows.Threading;
-
+using System.Reflection;
 
 
 namespace Diploma
 {
-    /// <summary>
-    /// Логика взаимодействия для MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
-        public string BoxPropertiesList { get; set; }
-        public List<Box> Boxes { get; set; }
-        public Visibility BoxPropertiesVisibility { get; set; }
-        public Visibility BoxListVisibility { get; set; }
-
-        public BitmapImage BoxPropertiesImg { get; set; }
-        public BitmapImage BoxListImg { get; set; }
-
+        public GeneralViewModel generalVM = new GeneralViewModel();
         
         public MainWindow()
         {
-            Boxes = new List<Box> { };
-            
-
-            
-
-            BoxPropertiesVisibility = Visibility.Collapsed;
-            BoxPropertiesImg = new BitmapImage(new Uri("Images/plus.png", UriKind.Relative));
-            OnPropertyChanged("BoxPropertiesVisibility");
-            OnPropertyChanged("BoxPropertiesImg");
-            BoxListVisibility = Visibility.Collapsed;
-            BoxListImg = new BitmapImage(new Uri("Images/plus.png", UriKind.Relative));
-            OnPropertyChanged("BoxListVisibility");
-            OnPropertyChanged("BoxListImg");
-
             InitializeComponent();
-            DataContext = this;
-
-          
-            
-
+            this.DataContext = generalVM;
         }
 
         
 
         private void CheckBoxProperties(object sender, MouseButtonEventArgs e)
         {
-            if (BoxPropertiesVisibility == Visibility.Collapsed)
-            {
-                SetBoxPropertiesVisibility(Visibility.Visible, "Images/minus.png");
-            }
-            else
-            {
-                SetBoxPropertiesVisibility(Visibility.Collapsed, "Images/plus.png");
-            }
-        }
-
-        private void SetBoxPropertiesVisibility(Visibility vis, String uri)
-        {
-            BoxPropertiesVisibility = vis;
-            BoxPropertiesImg = new BitmapImage(new Uri(uri, UriKind.Relative));
-            OnPropertyChanged("BoxPropertiesVisibility");
-            OnPropertyChanged("BoxPropertiesImg");
+            generalVM.SetVisibility("BoxPropertiesVisibility", "BoxPropertiesImg");
         }
         private void CheckBoxList(object sender, MouseButtonEventArgs e)
         {
-            if (BoxListVisibility == Visibility.Collapsed)
-            {
-                SetBoxListVisibility(Visibility.Visible, "Images/minus.png");
-            }
-            else
-            {
-                SetBoxListVisibility(Visibility.Collapsed, "Images/plus.png");
-            }
-        }
-        private void SetBoxListVisibility(Visibility vis, String uri)
-        {
-            BoxListVisibility = vis;
-            BoxListImg = new BitmapImage(new Uri(uri, UriKind.Relative));
-            OnPropertyChanged("BoxListVisibility");
-            OnPropertyChanged("BoxListImg");
+            generalVM.SetVisibility("BoxListVisibility", "BoxListImg");
         }
 
 
@@ -110,22 +53,15 @@ namespace Diploma
 
         private void OpenProjectEvt(object sender, RoutedEventArgs e)
         {
-            //MessageBox.Show("Пункт для открытия проекта");
             OpenFileDialog odlg = new OpenFileDialog();
-            odlg.DefaultExt = ".txt"; // Default file extension
-            odlg.Filter = "Text documents (.txt)|*.txt"; // Filter files by extension
+            odlg.DefaultExt = ".txt";
+            odlg.Filter = "Text documents (.txt)|*.txt";
             odlg.FileOk += new CancelEventHandler(odlg_FileOk);
             odlg.ShowDialog();
-            
-            
         }
         private void odlg_FileOk(object sender, CancelEventArgs e)
         {
-            Boxes.Add(new Box("21877/8 паллет 1", 3.17, 1.82, 1.59, 770, false));
-            Boxes.Add(new Box("21877/8 паллет 2", 2.27, 2.07, 1.45, 900, false));
-            Boxes.Add(new Box("21877/8 паллет 3", 2.67, 2.17, 1.25, 650, false));
-            Boxes.Add(new Box("21877/8 паллет 4", 3.2, 0.52, 0.71, 297, false));
-            OnPropertyChanged("Boxex");
+            generalVM.InitializeBoxCollection();
             MessageBox.Show("данные открыты");
         }
 
@@ -136,7 +72,6 @@ namespace Diploma
             sdlg.Filter = "Text documents (.txt)|*.txt";
             sdlg.FileOk += new CancelEventHandler(sdlg_FileOk);
             sdlg.ShowDialog();
-            
         }
         private void sdlg_FileOk(object sender, CancelEventArgs e)
         {
@@ -146,6 +81,10 @@ namespace Diploma
         private void InvoiceImportEvt(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("Пункт для импорта инвойса");
+        }
+        private void FormPackListEvt(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Пункт для формирования и последующей печати упаковочного листа");
         }
         private void UndoEvt(object sender, RoutedEventArgs e)
         {
@@ -185,34 +124,15 @@ namespace Diploma
         }
         #endregion
 
-        private void ToggleButton_Checked(object sender, RoutedEventArgs e)
+        private void ToggleButton_CheckedEvt(object sender, RoutedEventArgs e)
         {
-//стоит ли здесь убирать зависимость от view?
-            foreach (var item in ToolBarPanel.Children)
-            {
-                if ((item.GetType().Name == sender.GetType().Name)) 
-                {
-                    
-                    if (((ToggleButton)sender).Name != ((ToggleButton)item).Name)
-                    {
-                        ((ToggleButton)item).IsChecked = false;
-                    }
-                }
-            }
+            generalVM.ToggleButton_Checked(((ToggleButton)sender).ToolTip.ToString());
         }
-
-
-
-
         
 
-        private void BoxList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void BoxList_SelectionChangedEvt(object sender, SelectionChangedEventArgs e)
         {
-//а здесь стоит?
-            Box sBox = (Box)BoxList.SelectedItem;
-            BoxPropertiesList = "Маркировка: " + sBox.Label + Environment.NewLine + "Длина: " + sBox.Length + Environment.NewLine + "Ширина: " + sBox.Width;
-            
-            OnPropertyChanged("BoxPropertiesList");
+            generalVM.BoxList_SelectionChanged();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -225,5 +145,7 @@ namespace Diploma
                 h(this, new PropertyChangedEventArgs(propertyName));
             }
         }
+
+
     }
 }

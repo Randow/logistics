@@ -42,6 +42,7 @@
                             </MenuItem>
                             <Separator></Separator>
                             <MenuItem Header="Импорт инвойса" Foreground="Black" Click="InvoiceImportEvt"></MenuItem>
+                            <MenuItem Header="Упаковочный лист" Foreground="Black" Click="FormPackListEvt"></MenuItem>
                         </MenuItem>
                         <MenuItem Header="Правка">
                             <MenuItem Header="Отменить" Foreground="Black" Click="UndoEvt"></MenuItem>
@@ -61,19 +62,39 @@
                 <Separator Margin="0" Background="#FF484848"></Separator>
                 <Separator Margin="0" Background="#FF383838"></Separator>
                 <StackPanel Orientation="Horizontal" Background="#ff404040" Name="ToolBarPanel">
-                    <ToggleButton Name="MoveButton" Style="{StaticResource ToolBarButtonStyle}" ToolTip="Перемещение" Checked="ToggleButton_Checked">
-                        <Image Source="Images/selectAndMove.png"/>
-                    </ToggleButton>
-
-                    <ToggleButton Name="RotateButton" Style="{StaticResource ToolBarButtonStyle}" ToolTip="Поворот" Checked="ToggleButton_Checked">
-                        <Image Source="Images/selectAndRotate.png"/>
-                    </ToggleButton>
-                    <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Height="15" Background="#FF2C84E8">
-
-                    </Separator>
-                    <ToggleButton Name="SelectButton" Style="{StaticResource ToolBarButtonStyle}" ToolTip="Выбор объекта"  Checked="ToggleButton_Checked">
-                        <Image Source="Images/selectObject.png" IsEnabled="False"/>
-                    </ToggleButton>
+                    <ItemsControl ItemsSource="{Binding Path=FirstGroupButtons}" Name="First">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal"></StackPanel>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <ToggleButton Style="{StaticResource ToolBarButtonStyle}" ToolTip="{Binding Path=ButtonToolTip}"
+                                              IsChecked="{Binding Path=IsChecked, UpdateSourceTrigger=PropertyChanged}"
+                                              Checked="ToggleButton_CheckedEvt" >
+                                    <Image Source="{Binding Path=ToogleButtonImg, UpdateSourceTrigger=PropertyChanged}"></Image>
+                                </ToggleButton>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Height="15" Background="#FF2C84E8"/>
+                    <ItemsControl ItemsSource="{Binding Path=SecondGroupButtons}"  Name="Second">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal"></StackPanel>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <ToggleButton Style="{StaticResource ToolBarButtonStyle}" ToolTip="{Binding Path=ButtonToolTip}"
+                                              IsChecked="{Binding Path=IsChecked, UpdateSourceTrigger=PropertyChanged}"
+                                              Checked="ToggleButton_CheckedEvt" >
+                                    <Image Source="{Binding Path=ToogleButtonImg, UpdateSourceTrigger=PropertyChanged}"></Image>
+                                </ToggleButton>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
                 </StackPanel>
                 <Separator Margin="0" Background="#FF484848"></Separator>
                 <Separator Margin="0" Background="#FF353535"></Separator>
@@ -91,13 +112,6 @@
                                 <StackPanel Orientation="Horizontal" Margin="15,0,10,15" Visibility="{Binding Path=BoxPropertiesVisibility, UpdateSourceTrigger=PropertyChanged}">
                                     <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Background="#FF2C84E8"/>
                                     <TextBlock Margin="10,0,0,0" Foreground="#ffc0c0c0" Name="PropertiesList" Text="{Binding Path=BoxPropertiesList}"> 
-                                        <!--Маркировка: <LineBreak/>
-                                        Длина: <LineBreak/>
-                                        Ширина: <LineBreak/>
-                                        Высота: <LineBreak/>
-                                        Вес: <LineBreak/>
-                                        Максимально в стопке: <LineBreak/>
-                                        Кантовка:-->
                                     </TextBlock>
                                 </StackPanel>
                             </StackPanel>
@@ -108,8 +122,9 @@
                                     <Image Source="{Binding Path=BoxListImg, UpdateSourceTrigger=PropertyChanged}"/>
                                     <Label Foreground="#ffeeeeee" Content="Список объектов"/>
                                 </StackPanel>
-                                <ListBox BorderBrush="Transparent" Foreground="#ffc0c0c0" Visibility="{Binding Path=BoxListVisibility, UpdateSourceTrigger=PropertyChanged}" ItemsSource="{Binding Path=Boxes, UpdateSourceTrigger=PropertyChanged}"
-                                         Padding="2" Background="{x:Null}" SelectionChanged="BoxList_SelectionChanged" Name="BoxList">
+                                <ListBox BorderBrush="Transparent" Foreground="#ffc0c0c0" Visibility="{Binding Path=BoxListVisibility, UpdateSourceTrigger=PropertyChanged}" 
+                                         ItemsSource="{Binding Path=Boxes, UpdateSourceTrigger=PropertyChanged}" Padding="2" Background="{x:Null}" SelectionChanged="BoxList_SelectionChangedEvt" 
+                                         SelectedItem="{Binding Path=BoxListSelectedItem, UpdateSourceTrigger=PropertyChanged}" Name="BoxList" >
                                     <ListBox.ItemContainerStyle>
                                         <Style>
                                             <Setter Property="ListBoxItem.BorderBrush" Value="#FF353535"></Setter>
@@ -120,16 +135,9 @@
                                     </ListBox.ItemContainerStyle>
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
-                                            <Label Height="30" VerticalContentAlignment="Center" Foreground="#ffc0c0c0" Content="{Binding Path=Label}"
-                                                    Width="208"></Label>
+                                            <Label Height="30" VerticalContentAlignment="Center" Foreground="#ffc0c0c0" Content="{Binding Path=Label}" Width="208"></Label>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
-                                    <!--<Border BorderBrush="#FF353535" #FF2C84E8 BorderThickness="1" Margin="4,4,4,0">
-                                        <Border BorderBrush="#FF484848" BorderThickness="1">
-                                            <Label Height="30" VerticalContentAlignment="Center" Foreground="#ffc0c0c0">1 коробка</Label>
-                                        </Border>
-                                    </Border>-->
-
                                 </ListBox>
                             </StackPanel>
                         </Border>
