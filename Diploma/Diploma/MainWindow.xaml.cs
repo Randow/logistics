@@ -80,7 +80,11 @@ namespace Diploma
 
         private void InvoiceImportEvt(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Пункт для импорта инвойса");
+            OpenFileDialog odlg = new OpenFileDialog();
+            odlg.DefaultExt = ".csv";
+            odlg.Filter = "Text documents (.csv)|*.csv";
+            odlg.FileOk += new CancelEventHandler(odlg_FileOk);
+            odlg.ShowDialog();
         }
         private void FormPackListEvt(object sender, RoutedEventArgs e)
         {
